@@ -4,7 +4,7 @@
 
 Given a query, we can compute its textual _embeddings_ an then use measures of similarity such as cosine similarity to obtain the closest sentences in the corpus and provide the relevant search results.
 
-This repository presents a sentence transformer model that was fine-tuned from a large BERT-based model with a search adaptor architecture that allows it to perform better on the domain of academic research publications.
+This repository presents a sentence transformer model that was fine-tuned from a large [BERT-based model](https://huggingface.co/sentence-transformers/all-MiniLM-L12-v2) with a search adaptor architecture that allows it to be slightly more performant on the domain of academic research publications than generic models.
 
 ## Dataset
 
