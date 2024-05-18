@@ -1,9 +1,9 @@
-from sentence_transformers import SentenceTransformer
+from sentence_transformers import SentenceTransformer, quantization
 import numpy as np
 from typing import Dict
 
 def hit_rate_at_k(queries: Dict[str, str], corpus: Dict[str, str], relevant_docs: Dict[str, str], 
-                  model: SentenceTransformer, k: int = 10) -> float:
+                  model: SentenceTransformer, k: int = 10, quantization_int8:bool=False) -> float:
     """
     Calcula la métrica de hit rate para un modelo de embeddings.
 
@@ -23,6 +23,10 @@ def hit_rate_at_k(queries: Dict[str, str], corpus: Dict[str, str], relevant_docs
     # Obtener los embeddings de las consultas y el corpus
     query_embeddings = model.encode(list(queries.values()))
     corpus_embeddings = model.encode(list(corpus.values()))
+    
+    if quantization_int8:
+        query_embeddings = quantization.quantize_embeddings(query_embeddings, precision="int8")
+        corpus_embeddings = quantization.quantize_embeddings(corpus_embeddings, precision="int8")
     
     # Calcular las similitudes
     dot_score = np.dot(query_embeddings, corpus_embeddings.T)
