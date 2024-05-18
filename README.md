@@ -10,6 +10,10 @@ This repository presents a sentence transformer model that was fine-tuned from a
 
 ## Results
 
+## Deployment
+
+We used the [NVIDIA Triton Inference Server](https://github.com/triton-inference-server) to serve the model experimenting with both Torch-Tensor RT and quantization to improve both the model throughput and latency over the network.
+
 ## How to run the notebooks?
 
 The repository contains various Jupyter notebooks to perform various tasks.
