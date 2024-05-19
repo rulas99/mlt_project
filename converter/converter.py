@@ -14,13 +14,14 @@ class OnnxEncoder:
     OnxEncoder used to run SentenceTransformer model with domain adapter module under OnnxRuntime
     '''
     
-    def __init__(self, session, tokenizer, pooling, adapter, normalization):
+    def __init__(self, session, tokenizer, pooling, adapter, normalization, device):
         self.session=session
         self.tokenizer=tokenizer
         self.max_length=tokenizer.__dict__["model_max_length"]
         self.pooling=pooling
         self.adapter=adapter
         self.normalization=normalization
+        self.device=device
 
     def encode(self, sentences: list):
 
@@ -49,8 +50,11 @@ class OnnxEncoder:
             },
         )
         
+        print(self.session.get_providers())
+        
         # Apply the domain adapter layer
-        sentence_embedding = self.adapter.forward(input_data=sentence_embedding)
+        self.adapter.to(self.device)
+        sentence_embedding = self.adapter.forward(features=sentence_embedding)
 
         # Apply the normalization layer
         sentence_embedding = self.normalization.forward(features=sentence_embedding)
@@ -60,7 +64,7 @@ class OnnxEncoder:
         if sentence_embedding.shape[0] == 1:
             sentence_embedding = sentence_embedding[0]
 
-        return sentence_embedding.numpy()
+        return sentence_embedding.detach().numpy()
 
 
 def sentence_transformers_onnx(
@@ -69,7 +73,7 @@ def sentence_transformers_onnx(
     config_path,
     do_lower_case=True,
     input_names=["input_ids", "attention_mask", "token_type_ids"],
-    providers=["CUDAExecutionProvider"],
+    device="cpu",
 ):
     '''
     Converts a sentence transformer model (SBERT) to a onnx model that can be run on OnnxRuntime
@@ -78,15 +82,19 @@ def sentence_transformers_onnx(
     ----------
     model
         SentenceTransformer model.
-    path
+    output_path
         Model file dedicated to session inference.
+    config_path
+        The input model must be saved at this path.
     do_lower_case
         Either or not the model is cased.
     input_names
         Fields needed by the Transformer.
-    providers
-        Either run the model on CPU or GPU: ["CPUExecutionProvider", "CUDAExecutionProvider"].
+    device
+        Either run the model on CPU or GPU
     '''
+    providers=["CUDAExecutionProvider"] if device.type == "cuda" else ["CPUExecutionProvider"]
+    
     configuration = transformers.AutoConfig.from_pretrained(
         config_path, from_tf=False, local_files_only=True
     )
@@ -118,7 +126,7 @@ def sentence_transformers_onnx(
         torch.onnx.export(
             encoder,
             args=tuple(inputs.values()),
-            f=f"{path}.onx",
+            f=f"{output_path}.onx",
             opset_version=14,
             do_constant_folding=True,
             input_names=input_names,
@@ -143,9 +151,10 @@ def sentence_transformers_onnx(
             break
 
         return OnnxEncoder(
-            session=onnxruntime.InferenceSession(f"{path}.onx", providers=providers),
+            session=onnxruntime.InferenceSession(f"{output_path}.onnx", providers=providers),
             tokenizer=tokenizer,
             pooling=pooling,
             adapter=adapter,
             normalization=normalization,
+            device=device,
         )
