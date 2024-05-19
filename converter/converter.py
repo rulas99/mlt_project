@@ -6,72 +6,15 @@ Adapted from https://github.com/UKPLab/sentence-transformers/issues/46
 
 import onnxruntime
 import torch
+from torch import nn
 import transformers
 from sentence_transformers import SentenceTransformer, models
-
-class OnnxEncoder:
-    '''
-    OnxEncoder used to run SentenceTransformer model with domain adapter module under OnnxRuntime
-    '''
-    
-    def __init__(self, session, tokenizer, pooling, adapter, normalization, device):
-        self.session=session
-        self.tokenizer=tokenizer
-        self.max_length=tokenizer.__dict__["model_max_length"]
-        self.pooling=pooling
-        self.adapter=adapter
-        self.normalization=normalization
-        self.device=device
-
-    def encode(self, sentences: list):
-
-        sentences = [sentences] if isinstance(sentences, str) else sentences
-        
-        # Tokenize the input sentences using the BERT tokenizer
-        inputs = {
-            k: v.numpy()
-            for k, v in self.tokenizer(
-                sentences,
-                padding=True,
-                truncation=True,
-                max_length=self.max_length,
-                return_tensors="pt",
-            ).items()
-        }
-        
-        # Run inference using the hidden transformer layer from the base model
-        hidden_state = self.session.run(None, inputs)
-        
-        # Apply pooling layer
-        sentence_embedding = self.pooling.forward(
-            features={
-                "token_embeddings": torch.Tensor(hidden_state[0]),
-                "attention_mask": torch.Tensor(inputs.get("attention_mask")),
-            },
-        )
-        
-        print(self.session.get_providers())
-        
-        # Apply the domain adapter layer
-        self.adapter.to(self.device)
-        sentence_embedding = self.adapter.forward(features=sentence_embedding)
-
-        # Apply the normalization layer
-        sentence_embedding = self.normalization.forward(features=sentence_embedding)
-
-        sentence_embedding = sentence_embedding["sentence_embedding"]
-
-        if sentence_embedding.shape[0] == 1:
-            sentence_embedding = sentence_embedding[0]
-
-        return sentence_embedding.detach().numpy()
-
 
 def sentence_transformers_onnx(
     model,
     output_path,
     config_path,
-    do_lower_case=True,
+    do_lower_case=False,
     input_names=["input_ids", "attention_mask", "token_type_ids"],
     device="cpu",
 ):
@@ -119,36 +62,71 @@ def sentence_transformers_onnx(
 
     model.eval()
 
-    with torch.no_grad():
+    for modules in model.modules():
+        for idx, module in enumerate(modules):
+            if idx == 1:
+                pooling = module
+            if idx == 2:
+                adapter = module
+            if idx == 3:
+                normalization = module
+        break
 
+    class SentenceTransformerModel(nn.Module):
+        def __init__(self):
+            super(SentenceTransformerModel, self).__init__()
+            # BERT base model
+            self.encoder = encoder
+            # Pooling layer
+            self.pooling = pooling
+            # Adapter module
+            self.adapter = adapter
+            # Normalization Layer
+            self.normalization = normalization
+        
+        def forward(self, input_ids, attention_mask, token_type_ids):            
+            hidden_state = self.encoder.forward(input_ids, attention_mask, token_type_ids)
+            
+            sentence_embedding = self.pooling.forward(
+                features={
+                    "token_embeddings": torch.Tensor(hidden_state[0]),
+                    "attention_mask": torch.Tensor(attention_mask),
+                },
+            )
+
+            sentence_embedding = self.adapter.forward(features=sentence_embedding)
+
+            sentence_embedding = self.normalization.forward(features=sentence_embedding)
+
+            sentence_embedding = sentence_embedding["sentence_embedding"]
+
+            if sentence_embedding.shape[0] == 1:
+                sentence_embedding = sentence_embedding[0]
+
+            return sentence_embedding
+
+    with torch.no_grad():
+        inference_model = SentenceTransformerModel()
+        inference_model.to(device)
+        inference_model.eval()
+        
         symbolic_names = {0: "batch_size", 1: "max_seq_len"}
 
         torch.onnx.export(
-            encoder,
+            inference_model,
             args=tuple(inputs.values()),
-            f=f"{output_path}.onx",
+            f=f"{output_path}.onnx",
             opset_version=14,
             do_constant_folding=True,
             input_names=input_names,
-            output_names=["start", "end"],
             dynamic_axes={
                 "input_ids": symbolic_names,
                 "attention_mask": symbolic_names,
                 "token_type_ids": symbolic_names,
-                "start": symbolic_names,
-                "end": symbolic_names,
             },
         )
 
-        for modules in model.modules():
-            for idx, module in enumerate(modules):
-                if idx == 1:
-                    pooling = module
-                if idx == 2:
-                    adapter = module
-                if idx == 3:
-                    normalization = module
-            break
+        return inference_model
 
         return OnnxEncoder(
             session=onnxruntime.InferenceSession(f"{output_path}.onnx", providers=providers),
