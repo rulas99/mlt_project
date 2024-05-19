@@ -24,7 +24,7 @@ BOT = telebot.TeleBot(BOT_TOKEN)
 CLIENT = Groq(api_key=GROQ_API_KEY)
 
 
-# CUSTOM_MODEL = SentenceTransformer("./results/domain_adaptation_model", device='cuda')
+CUSTOM_MODEL = SentenceTransformer("./results/domain_adaptation_model", device='cuda')
 BASE_MODEL = SentenceTransformer(
     'sentence-transformers/all-MiniLM-L12-v2', device='cuda')
 

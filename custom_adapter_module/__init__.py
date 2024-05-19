@@ -51,19 +51,19 @@ class AdapterModule(nn.Module):
         if add_residual:
             self.residual_weight = nn.Parameter(nn.init.uniform_(torch.empty(1), 0, 0.1))  # Small initialization
 
-    def forward(self, input_data):
+    def forward(self, features):
         """
         Forward pass through the network.
         
         Args:
-            input_data (dict): A dictionary containing the input data with 'sentence_embedding' as a key.
+            features (dict): A dictionary containing the input data with 'sentence_embedding' as a key.
         
         Returns:
             dict: Updated input_data with modified 'sentence_embedding'.
         """
         
         # Extract the sentence embeddings from input_data
-        x = input_data.get('sentence_embedding')
+        x = features.get('sentence_embedding')
         
         # Store the original embeddings for the residual connection
         original_x = x if self.add_residual else None
@@ -82,9 +82,9 @@ class AdapterModule(nn.Module):
             x += self.residual_weight * original_x
             
         # Update the 'sentence_embedding' in the input_data
-        input_data['sentence_embedding'] = x
+        features['sentence_embedding'] = x
         
-        return input_data
+        return features
     
     def save(self, output_path):
         """
