@@ -7,18 +7,28 @@ Given a query, we can compute its textual _embeddings_ an then use measures of s
 This repository presents a sentence transformer model that was fine-tuned from a large [BERT-based model](https://huggingface.co/sentence-transformers/all-MiniLM-L12-v2) with a search adaptor architecture that allows it to be slightly more performant on the domain of academic research publications than generic models.
 
 ## Dataset
+<to do (agregar informacion del trabajo escrito)>
+- data directory contains...
 
 ## Results
+<to do (agregar informacion del trabajo escrito)>
+- results directory contains....
 
 ## Deployment
 
 We used the [NVIDIA Triton Inference Server](https://github.com/triton-inference-server) to serve the model experimenting with both Torch-Tensor RT and quantization to improve both the model throughput and latency over the network.
+
+### Adapted Model Deployment + RAG Agent + LLM + TelegramBot
+<to do>
 
 ## How to run the notebooks?
 
 The repository contains various Jupyter notebooks to perform various tasks.
 
 - `model.ipynb` This notebook contains the model architecture and training scripts.
+- `data_processing.ipynb` <to do>
+- `deploy.ipynb` <to do>
+- `model_rag_agent.ipynb` <to do>
 
 Please follow these steps to run any of the notebooks.
 
