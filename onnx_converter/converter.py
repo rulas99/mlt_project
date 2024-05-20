@@ -127,12 +127,3 @@ def sentence_transformers_onnx(
         )
 
         return inference_model
-
-        return OnnxEncoder(
-            session=onnxruntime.InferenceSession(f"{output_path}.onnx", providers=providers),
-            tokenizer=tokenizer,
-            pooling=pooling,
-            adapter=adapter,
-            normalization=normalization,
-            device=device,
-        )

@@ -7,8 +7,12 @@ Given a query, we can compute its textual _embeddings_ an then use measures of s
 This repository presents a sentence transformer model that was fine-tuned from a large [BERT-based model](https://huggingface.co/sentence-transformers/all-MiniLM-L12-v2) with a search adaptor architecture that allows it to be slightly more performant on the domain of academic research publications than generic models.
 
 ## Dataset
+<to do (agregar informacion del trabajo escrito)>
+- data directory contains...
 
 ## Results
+<to do (agregar informacion del trabajo escrito)>
+- results directory contains....
 
 ## Deployment
 
@@ -41,11 +45,17 @@ The project contains the followin modules.
 - `custom_adapter_module`: This module exports the AdaterModule, a _Pytorch_ class defining the architecture of the domain adapter.
 - `onnx_converter`: This module converts the Pytorch-based sentence transformer model to Onnx format for interoperability.
 
+### Adapted Model Deployment + RAG Agent + LLM + TelegramBot
+<to do>
+
 ## How to run the notebooks?
 
 The repository contains various Jupyter notebooks to perform various tasks.
 
 - `model.ipynb` This notebook contains the model training steps and the analysis of its performance compared to the baseline model.
+- `data_processing.ipynb` <to do>
+- `deploy.ipynb` <to do>
+- `model_rag_agent.ipynb` <to do>
 
 Please follow these steps to run any of the notebooks.
 
