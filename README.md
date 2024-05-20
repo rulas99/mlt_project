@@ -12,13 +12,40 @@ This repository presents a sentence transformer model that was fine-tuned from a
 
 ## Deployment
 
-We used the [NVIDIA Triton Inference Server](https://github.com/triton-inference-server) to serve the model experimenting with both Torch-Tensor RT and quantization to improve both the model throughput and latency over the network.
+We used the [NVIDIA Triton Inference Server](https://github.com/triton-inference-server) to serve the model experimenting with Torch-Tensor RT quantization to improve both the model throughput and latency over the network.
+
+The deployed model receives the input tensors from the tokenization and returns the corresponding embeddings. The Pytorch model was first exported to _ONNX_ format, and then leveraged NVidia server infrastructure to serve the model effortlessly.
+
+The server can be started with the following command.
+
+```sh
+sudo docker run --gpus=all --rm -p8000:8000 -p8001:8001 -p8002:8002 -v/absolute_path_/model_repository:/models nvcr.io/nvidia/tritonserver:24.04-py3 tritonserver --model-repository=/models
+```
+
+For analyzing the throughput and latency of the system, we used Nvidia triton server SDK for perfomanze analysis. You can launch the docker image with this command
+
+```sh
+docker run -ti --rm --network=host --name triton-client nvcr.io/nvidia/tritonserver:24.04-py3-sdk
+```
+
+And then use this command to get the model performance in terms of computational efficiency
+
+```sh
+perf_analyzer -m domain_adapter --concurrency-range 1:4 -u http://host.docker.internal:8000
+```
+
+## Project structure
+
+The project contains the followin modules.
+
+- `custom_adapter_module`: This module exports the AdaterModule, a _Pytorch_ class defining the architecture of the domain adapter.
+- `onnx_converter`: This module converts the Pytorch-based sentence transformer model to Onnx format for interoperability.
 
 ## How to run the notebooks?
 
 The repository contains various Jupyter notebooks to perform various tasks.
 
-- `model.ipynb` This notebook contains the model architecture and training scripts.
+- `model.ipynb` This notebook contains the model training steps and the analysis of its performance compared to the baseline model.
 
 Please follow these steps to run any of the notebooks.
 
