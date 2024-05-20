@@ -32,10 +32,10 @@ For analyzing the throughput and latency of the system, we used Nvidia triton se
 docker run -ti --rm --network=host --name triton-client nvcr.io/nvidia/tritonserver:24.04-py3-sdk
 ```
 
-And then use this command to get the model performance in terms of computational efficiency
+And then use this command to get the model performance when the input sequence has 50 tokens. These values can be adjusted as you see fit.
 
 ```sh
-perf_analyzer -m domain_adapter --concurrency-range 1:4 -u http://host.docker.internal:8000
+perf_analyzer -m domain_adapter --concurrency-range 1:4 -u http://host.docker.internal:8000 --shape attention_mask:1,50 --shape input_ids:1,50 --shape token_type_ids:1,50
 ```
 
 ## Project structure
