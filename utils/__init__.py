@@ -120,6 +120,8 @@ def get_top_k_relevant_info(emb_q: np.array, k: int) -> str:
                        i], ENTITIES[list(ENTITIES.keys())[i]]) for i in top_k]
 
     ids = [i[0] for i in top_k_entities]
+    
+    print("**** retrieved ids ****\n", ids)
 
     triples = str(TRIPLES[TRIPLES.subjectId.isin(ids) |
                   TRIPLES.objectId.isin(ids)].to_dict(orient='records'))
@@ -135,7 +137,7 @@ def get_top_k_relevant_info(emb_q: np.array, k: int) -> str:
 
 def request_agent(user_request, role, temperature=0.2,
                   top_p=0.3, model="mixtral-8x7b-32768",
-                  max_tokens=13000):
+                  max_tokens=13000, response_format="json_object"):
 
     try:
         chat_completion = CLIENT.chat.completions.create(
@@ -154,11 +156,16 @@ def request_agent(user_request, role, temperature=0.2,
             max_tokens=max_tokens,
             model=model,
             timeout=30,
-            response_format={"type": "json_object"},
+            response_format={"type": response_format} if response_format=="json_object" else None,
         )
-
+        
         response = chat_completion.choices[0].message.content
-        response_json = json_loads(response)
+        
+        if response_format!="json_object":
+            response_json = {'response': str(response)}
+        else:
+            response_json = json_loads(response)
+            
     except Exception as e:
         print(e)
         response_json = {
