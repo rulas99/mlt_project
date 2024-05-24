@@ -46,16 +46,17 @@ The project contains the followin modules.
 - `onnx_converter`: This module converts the Pytorch-based sentence transformer model to Onnx format for interoperability.
 
 ### Adapted Model Deployment + RAG Agent + LLM + TelegramBot
-<to do>
+<to do (agregar info del documento o diapos)>
 
 ## How to run the notebooks?
 
 The repository contains various Jupyter notebooks to perform various tasks.
 
 - `model.ipynb` This notebook contains the model training steps and the analysis of its performance compared to the baseline model.
-- `data_processing.ipynb` <to do>
-- `deploy.ipynb` <to do>
-- `model_rag_agent.ipynb` <to do>
+- `data_processing.ipynb` <to do (agregar info del documento o diapos)>
+- `deploy.ipynb` <to do (agregar info del documento o diapos)>
+- `model_rag_agent.ipynb` <to do (agregar info del documento o diapos)>
+
 
 Please follow these steps to run any of the notebooks.
 
