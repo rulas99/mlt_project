@@ -7,12 +7,19 @@ Given a query, we can compute its textual _embeddings_ an then use measures of s
 This repository presents a sentence transformer model that was fine-tuned from a large [BERT-based model](https://huggingface.co/sentence-transformers/all-MiniLM-L12-v2) with a search adaptor architecture that allows it to be slightly more performant on the domain of academic research publications than generic models.
 
 ## Dataset
-<to do (agregar informacion del trabajo escrito)>
-- data directory contains...
+To customize the model for the scientific domain, which encompasses publications, authors, and venues, we chose to utilize the REST API provided by Semantic Scholar. 
+This API facilitates easy searches, with a limit of up to one request per second if an API key is available. The information offered by Semantic Scholar includes references and citations for each publication, as well as details about authors, journals, areas of study, PDF URLs, and more. 
+
+We processed a sample of the resulting data to define a series of triples that link the retrieved entities (authors, publication venues, papers) through their respective properties, such as cited/referenced in, published in/by, written by, co-authored with, etc.
 
 ## Results
-<to do (agregar informacion del trabajo escrito)>
-- results directory contains....
+Our evaluation focused on evaluating the performance of domain-adapted base and custom models on entity retrieval tasks. We use several metrics, including hit rate, accuracy, precision, recall, mean reciprocal rank (MRR), normalized discounted cumulative gain (NDCG), and mean average precision (MAP), to comprehensively evaluate the effectiveness of the models.
+
+The domain-adapted model consistently outperformed the base model on all metrics, demonstrating its superior performance in retrieving relevant entities from the dataset. Specifically, the hit rate for the custom model was 0.94, indicating that the relevant document was among the top 10 results in 94% of queries, compared to only 10% for the base model. 
+
+Furthermore, qualitative analysis revealed that the custom domain-adapted model effectively captured additional semantic information related to each entity's area of ​​expertise. This improved semantic representation resulted in more accurate and contextually relevant retrieval results, contributing to the model's superior performance.
+
+In conclusion, the custom domain-adapted model demonstrates significantly improved performance on entity retrieval tasks, making it a valuable tool for information retrieval in scientific networks. Its enhanced ability to capture domain-specific information and retain core capabilities underscores its potential to revolutionize information retrieval systems across multiple domains.
 
 ## Deployment
 
