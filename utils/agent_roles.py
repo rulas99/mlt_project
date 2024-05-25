@@ -31,6 +31,12 @@ roles = {
       "response": "Sorry, I don't have information on that topic. I can help you with information about scientific publications, authors, fields of study, and venues."
     }
     
+    6. User: "In which fields of study does the author N. Flyer work?"
+    Agent:
+    {
+      "response": "redirect"
+    }
+    
     6. User: "Could you give me information on how to make a pizza?"
     Agent:
     {
