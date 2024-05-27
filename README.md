@@ -53,16 +53,20 @@ The project contains the followin modules.
 - `onnx_converter`: This module converts the Pytorch-based sentence transformer model to Onnx format for interoperability.
 
 ### Adapted Model Deployment + RAG Agent + LLM + TelegramBot
-<to do (agregar info del documento o diapos)>
+This project demonstrates the deployment of an adapted sentence transformer model combined with a Retrieval-Augmented Generation (RAG) agent and a Large Language Model (LLM), integrated with a Telegram bot for efficient information retrieval and user interaction.
+
+- `Adapted Model`: A fine-tuned BERT-based sentence transformer model optimized for the domain of academic research publications.
+- `RAG Agent`: A Retrieval-Augmented Generation agent that combines the power of retrieval-based models with generative models to enhance the quality of the responses.
+- `LLM`: A Large Language Model that provides advanced language understanding and generation capabilities.
+- `Telegram Bot`: A bot that facilitates user interaction and retrieves information based on user queries through the Telegram messaging platform.
 
 ## How to run the notebooks?
 
 The repository contains various Jupyter notebooks to perform various tasks.
 
 - `model.ipynb` This notebook contains the model training steps and the analysis of its performance compared to the baseline model.
-- `data_processing.ipynb` <to do (agregar info del documento o diapos)>
-- `deploy.ipynb` <to do (agregar info del documento o diapos)>
-- `model_rag_agent.ipynb` <to do (agregar info del documento o diapos)>
+- `data_processing.ipynb` This notebook contains the steps for data preprocessing and preparation required for training the sentence transformer model and evaluating its effectiveness in the domain of academic research publications.
+- `model_rag_agent.ipynb` This notebook contains the deployment steps for a Retrieval-Augmented Generation (RAG) agent, including model integration, performance evaluation, and deployment configuration for effective information retrieval in academic research publications.
 
 
 Please follow these steps to run any of the notebooks.
@@ -108,3 +112,9 @@ pip install -r requirements.txt
 ```sh
 jupyter-lab <notebook-name>
 ```
+
+## Additional resources
+
+- `mlt_g4_paper.pdf` This document contains a detailed description of a domain-specific adapter for sentence transformer models, including the methodology, training process, and performance evaluation for enhancing semantic search capabilities in academic research publications.
+- `mlt_g4_presentation.pdf` This presentation provides an overview of a domain-specific adapter for sentence transformer models, covering topics such as semantic search, domain adapters, dataset preparation, training process, results, and deployment, with a focus on enhancing semantic search capabilities in academic research publications.
+-[Video explaining the project](https://uniandes-my.sharepoint.com/:v:/r/personal/c_delarosap_uniandes_edu_co/Documents/MLTG4.mp4?csf=1&web=1&e=KCtrXe&nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJTdHJlYW1XZWJBcHAiLCJyZWZlcnJhbFZpZXciOiJTaGFyZURpYWxvZy1MaW5rIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXcifX0%3D)
